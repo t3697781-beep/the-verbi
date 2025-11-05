@@ -1,0 +1,1427 @@
+id: moduleContainer
+parentSlotId: '2'
+definitionId: customReactApp
+styles:
+  xl:
+    gridItem:
+      x: 0
+      y: 0
+      w: 24
+      h: 40
+properties:
+  name: moduleContainer
+  heightMode: auto
+  margin: false
+  fileSystem:
+    app/app.tsx: |
+      import { useState } from 'react';
+      import { HomePage } from '@/components/pages/HomePage';
+      import { DefineWordPage } from '@/components/pages/DefineWordPage';
+      import { FindWordPage } from '@/components/pages/FindWordPage';
+      import { ReframePage } from '@/components/pages/ReframePage';
+      import { VaultPage } from '@/components/pages/VaultPage';
+
+      type PageType = 'home' | 'define' | 'find' | 'reframe' | 'vault';
+
+      function App() {
+        const [currentPage, setCurrentPage] = useState<PageType>('home');
+
+        const renderPage = () => {
+          switch (currentPage) {
+            case 'home':
+              return <HomePage onNavigate={setCurrentPage} />;
+            case 'define':
+              return <DefineWordPage onNavigate={setCurrentPage} onBack={() => setCurrentPage('home')} />;
+            case 'find':
+              return <FindWordPage onNavigate={setCurrentPage} onBack={() => setCurrentPage('home')} />;
+            case 'reframe':
+              return <ReframePage onBack={() => setCurrentPage('home')} />;
+            case 'vault':
+              return <VaultPage onBack={() => setCurrentPage('home')} />;
+            default:
+              return <HomePage onNavigate={setCurrentPage} />;
+          }
+        };
+
+        return (
+          <div className="min-h-screen bg-[#EBD3B0] flex flex-col">
+            <div className="flex-1 fade-in">{renderPage()}</div>
+            <footer className="py-4 text-center">
+              <p className="text-sm text-[#5B3920]" style={{ fontFamily: 'Playfair Display, serif' }}>
+                Made with <span className="text-[#5B3920]">💜</span> by Verbi
+              </p>
+            </footer>
+          </div>
+        );
+      }
+
+      export default App;
+    components/ui/button.tsx: |+
+      import * as React from "react"
+      import { Slot } from "@radix-ui/react-slot"
+      import { cva, type VariantProps } from "class-variance-authority"
+
+      import { cn } from "@/lib/utils"
+
+      const buttonVariants = cva(
+        "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+        {
+          variants: {
+            variant: {
+              default:
+                "bg-primary text-primary-foreground shadow hover:bg-primary/90",
+              destructive:
+                "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+              outline:
+                "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+              secondary:
+                "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+              ghost: "hover:bg-accent hover:text-accent-foreground",
+              link: "text-primary underline-offset-4 hover:underline",
+            },
+            size: {
+              default: "h-9 px-4 py-2",
+              sm: "h-8 rounded-md px-3 text-xs",
+              lg: "h-10 rounded-md px-8",
+              icon: "h-9 w-9",
+            },
+          },
+          defaultVariants: {
+            variant: "default",
+            size: "default",
+          },
+        }
+      )
+
+      export interface ButtonProps
+        extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+          VariantProps<typeof buttonVariants> {
+        asChild?: boolean
+      }
+
+      const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+        ({ className, variant, size, asChild = false, ...props }, ref) => {
+          const Comp = asChild ? Slot : "button"
+          return (
+            <Comp
+              className={cn(buttonVariants({ variant, size, className }))}
+              ref={ref}
+              {...props}
+            />
+          )
+        }
+      )
+      Button.displayName = "Button"
+
+      export { Button, buttonVariants }
+
+    components/ui/card.tsx: >+
+      import * as React from "react"
+
+
+      import { cn } from "@/lib/utils"
+
+
+      const Card = React.forwardRef<
+        HTMLDivElement,
+        React.HTMLAttributes<HTMLDivElement>
+      >(({ className, ...props }, ref) => (
+        <div
+          ref={ref}
+          className={cn(
+            "rounded-lg border bg-card text-card-foreground shadow-sm",
+            className,
+          )}
+          {...props}
+        />
+      ))
+
+      Card.displayName = "Card"
+
+
+      const CardHeader = React.forwardRef<
+        HTMLDivElement,
+        React.HTMLAttributes<HTMLDivElement>
+      >(({ className, ...props }, ref) => (
+        <div
+          ref={ref}
+          className={cn("flex flex-col space-y-1.5 p-6", className)}
+          {...props}
+        />
+      ))
+
+      CardHeader.displayName = "CardHeader"
+
+
+      const CardTitle = React.forwardRef<
+        HTMLParagraphElement,
+        React.HTMLAttributes<HTMLHeadingElement>
+      >(({ className, ...props }, ref) => (
+        <h3
+          ref={ref}
+          className={cn(
+            "text-2xl font-semibold leading-none tracking-tight",
+            className,
+          )}
+          {...props}
+        />
+      ))
+
+      CardTitle.displayName = "CardTitle"
+
+
+      const CardDescription = React.forwardRef<
+        HTMLParagraphElement,
+        React.HTMLAttributes<HTMLParagraphElement>
+      >(({ className, ...props }, ref) => (
+        <p
+          ref={ref}
+          className={cn("text-sm text-muted-foreground", className)}
+          {...props}
+        />
+      ))
+
+      CardDescription.displayName = "CardDescription"
+
+
+      const CardContent = React.forwardRef<
+        HTMLDivElement,
+        React.HTMLAttributes<HTMLDivElement>
+      >(({ className, ...props }, ref) => (
+        <div ref={ref} className={cn("p-6 pt-0", className)} {...props} />
+      ))
+
+      CardContent.displayName = "CardContent"
+
+
+      const CardFooter = React.forwardRef<
+        HTMLDivElement,
+        React.HTMLAttributes<HTMLDivElement>
+      >(({ className, ...props }, ref) => (
+        <div
+          ref={ref}
+          className={cn("flex items-center p-6 pt-0", className)}
+          {...props}
+        />
+      ))
+
+      CardFooter.displayName = "CardFooter"
+
+
+      export { Card, CardHeader, CardFooter, CardTitle, CardDescription,
+      CardContent }
+
+    lib/utils.ts: |
+      import { clsx, type ClassValue } from 'clsx';
+      import { twMerge } from 'tailwind-merge';
+
+      export function cn(...inputs: ClassValue[]) {
+        return twMerge(clsx(inputs));
+      }
+    package.json: |
+      {
+        "name": "uib-module",
+        "packageManager": "bun",
+        "private": true,
+        "version": "0.0.0",
+        "type": "module",
+        "scripts": {
+          "lint": "eslint ."
+        },
+        "dependencies": {
+          "@radix-ui/react-avatar": "^1.1.10",
+          "@radix-ui/react-icons": "1.3.0",
+          "@radix-ui/react-slot": "^1.2.3",
+          "@radix-ui/react-tabs": "^1.1.13",
+          "@uibakery/data": "0.0.8",
+          "canvas-confetti": "1.9.3",
+          "class-variance-authority": "0.7.0",
+          "clsx": "2.1.1",
+          "lucide-react": "0.446.0",
+          "react": "18.3.1",
+          "react-day-picker": "^9.7.0",
+          "react-dom": "18.3.1",
+          "react-icons": "~5.5.0",
+          "tailwind-merge": "2.5.2"
+        },
+        "devDependencies": {
+          "@eslint/js": "9.11.1",
+          "@types/node": "22.7.3",
+          "@types/react": "18.3.9",
+          "@types/react-dom": "18.3.0",
+          "autoprefixer": "10.4.20",
+          "eslint": "9.11.1",
+          "eslint-plugin-react-hooks": "5.1.0-rc.0",
+          "eslint-plugin-react-refresh": "0.4.12",
+          "globals": "15.9.0",
+          "postcss": "8.4.47",
+          "tailwindcss": "3.4.13",
+          "typescript": "5.5.3",
+          "typescript-eslint": "8.7.0"
+        }
+      }
+    initial.md: >
+      # Requirements
+
+      ## Summary
+
+      Verbi is a personal copywriting and vocabulary assistant web app that
+      helps users express themselves more effectively. The application features
+      four core tools: Define a Word (dictionary lookup), Find a Word (reverse
+      dictionary), Reframe a Sentence (tone transformation), and My Vault
+      (personal collection). The design emphasizes a clean, modern aesthetic
+      with soft violet accents (#7C3AED) and elegant typography to create a
+      calm, productive environment for language exploration.
+
+
+      ## Use cases
+
+      - Navigation & Main Interface
+        1) User opens the app and sees a clean layout with a left sidebar containing the Verbi logo and navigation menu
+        2) User can navigate between Define a Word, Find a Word, Reframe a Sentence, and My Vault sections
+        3) Each page displays a consistent header with page title and quick search input
+        4) User sees their profile avatar and name in the top-right corner
+        
+      - Define a Word
+        1) User navigates to Define a Word section
+        2) User enters a word in the search bar
+        3) User views result cards showing word pronunciation, definitions, synonyms/antonyms as tags, and example usage in an italic text box
+        
+      - Find a Word
+        1) User navigates to Find a Word section
+        2) User describes what they mean in a text area
+        3) User clicks "Find Matching Words" button
+        4) User views word suggestions displayed in a grid or list with tone tags (formal, creative, rare)
+        
+      - Reframe a Sentence
+        1) User navigates to Reframe a Sentence section
+        2) User types or pastes a sentence in the left input area
+        3) User selects a tone tab (Natural, Elegant, Creative, Poetic)
+        4) User clicks "Reframe" button to see reframed output in the right area
+        
+      - My Vault
+        1) User navigates to My Vault section
+        2) User views a grid/table of saved words and sentences with columns: Word, Type, Date, Actions
+        3) User can search and sort saved items
+        4) User can view or delete items from their vault
+
+      ## Plan
+
+      ### Navigation & Main Interface
+
+      1. [x] Create app shell with left sidebar containing Verbi logo (🪶),
+      navigation menu items, and settings icon at bottom
+
+      2. [x] Implement routing for all four main sections with functional
+      navigation
+
+      3. [x] Build consistent header bar with page title and quick search input
+      for all pages
+
+      4. [x] Add profile avatar and greeting in top-right corner
+
+      5. [x] Style with soft neutral tones, violet accent (#7C3AED),
+      Inter/Poppins font, rounded corners (12px), and hover animations
+
+      6. [x] Add footer with "Made with 💜 by Verbi"
+
+
+      ### Define a Word
+
+      1. [] Create page layout with search bar input at top ("Enter a word to
+      define...")
+
+      2. [] Design result cards with sections for word + pronunciation,
+      definitions list, synonyms/antonyms as pill-style tags, and italic example
+      usage box
+
+      3. [] Add mock data for sample word definitions with varied examples
+
+      4. [] Implement smooth fade-in animation for results display
+
+
+      ### Find a Word
+
+      1. [] Create page layout with description text area ("Describe what you
+      mean…")
+
+      2. [] Add "Find Matching Words" button with hover state
+
+      3. [] Design results area with grid or list display for word suggestions
+
+      4. [] Add tone tags (formal, creative, rare) as colored pills for each
+      suggestion
+
+      5. [] Include mock data for word suggestions based on sample descriptions
+
+
+      ### Reframe a Sentence
+
+      1. [] Create two-column layout with input text box on left ("Type or paste
+      your sentence…") and output area on right
+
+      2. [] Implement tone tabs (Natural, Elegant, Creative, Poetic) with active
+      state styling
+
+      3. [] Add "Reframe" button below input area
+
+      4. [] Display mock reframed versions for each tone style
+
+      5. [] Add smooth transition animation when switching between tones
+
+
+      ### My Vault
+
+      1. [] Create grid/table layout with columns: Word, Type
+      (Defined/Found/Reframed), Date, Action (View/Delete)
+
+      2. [] Add search bar at top of vault section
+
+      3. [] Implement sorting options for columns
+
+      4. [] Add mock saved items with varied types and dates
+
+      5. [] Create view and delete action buttons with icon styling
+
+      6. [] Add empty state design for when vault is empty
+    components/ui/input.tsx: >+
+      import * as React from "react"
+
+
+      import { cn } from "@/lib/utils"
+
+
+      const Input = React.forwardRef<HTMLInputElement,
+      React.ComponentProps<"input">>(
+        ({ className, type, ...props }, ref) => {
+          return (
+            <input
+              type={type}
+              className={cn(
+                "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+                className
+              )}
+              ref={ref}
+              {...props}
+            />
+          )
+        }
+      )
+
+      Input.displayName = "Input"
+
+
+      export { Input }
+
+    components/ui/avatar.tsx: |+
+      import * as React from "react"
+      import * as AvatarPrimitive from "@radix-ui/react-avatar"
+
+      import { cn } from "@/lib/utils"
+
+      const Avatar = React.forwardRef<
+        React.ElementRef<typeof AvatarPrimitive.Root>,
+        React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
+      >(({ className, ...props }, ref) => (
+        <AvatarPrimitive.Root
+          ref={ref}
+          className={cn(
+            "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
+            className
+          )}
+          {...props}
+        />
+      ))
+      Avatar.displayName = AvatarPrimitive.Root.displayName
+
+      const AvatarImage = React.forwardRef<
+        React.ElementRef<typeof AvatarPrimitive.Image>,
+        React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Image>
+      >(({ className, ...props }, ref) => (
+        <AvatarPrimitive.Image
+          ref={ref}
+          className={cn("aspect-square h-full w-full", className)}
+          {...props}
+        />
+      ))
+      AvatarImage.displayName = AvatarPrimitive.Image.displayName
+
+      const AvatarFallback = React.forwardRef<
+        React.ElementRef<typeof AvatarPrimitive.Fallback>,
+        React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>
+      >(({ className, ...props }, ref) => (
+        <AvatarPrimitive.Fallback
+          ref={ref}
+          className={cn(
+            "flex h-full w-full items-center justify-center rounded-full bg-muted",
+            className
+          )}
+          {...props}
+        />
+      ))
+      AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName
+
+      export { Avatar, AvatarImage, AvatarFallback }
+
+    components/ui/badge.tsx: |+
+      import * as React from "react"
+      import { cva, type VariantProps } from "class-variance-authority"
+
+      import { cn } from "@/lib/utils"
+
+      const badgeVariants = cva(
+        "inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+        {
+          variants: {
+            variant: {
+              default:
+                "border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80",
+              secondary:
+                "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+              destructive:
+                "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
+              outline: "text-foreground",
+            },
+          },
+          defaultVariants: {
+            variant: "default",
+          },
+        }
+      )
+
+      export interface BadgeProps
+        extends React.HTMLAttributes<HTMLDivElement>,
+          VariantProps<typeof badgeVariants> {}
+
+      function Badge({ className, variant, ...props }: BadgeProps) {
+        return (
+          <div className={cn(badgeVariants({ variant }), className)} {...props} />
+        )
+      }
+
+      export { Badge, badgeVariants }
+
+    components/ui/tabs.tsx: |+
+      "use client"
+
+      import * as React from "react"
+      import * as TabsPrimitive from "@radix-ui/react-tabs"
+
+      import { cn } from "@/lib/utils"
+
+      const Tabs = TabsPrimitive.Root
+
+      const TabsList = React.forwardRef<
+        React.ElementRef<typeof TabsPrimitive.List>,
+        React.ComponentPropsWithoutRef<typeof TabsPrimitive.List>
+      >(({ className, ...props }, ref) => (
+        <TabsPrimitive.List
+          ref={ref}
+          className={cn(
+            "inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground",
+            className
+          )}
+          {...props}
+        />
+      ))
+      TabsList.displayName = TabsPrimitive.List.displayName
+
+      const TabsTrigger = React.forwardRef<
+        React.ElementRef<typeof TabsPrimitive.Trigger>,
+        React.ComponentPropsWithoutRef<typeof TabsPrimitive.Trigger>
+      >(({ className, ...props }, ref) => (
+        <TabsPrimitive.Trigger
+          ref={ref}
+          className={cn(
+            "inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow",
+            className
+          )}
+          {...props}
+        />
+      ))
+      TabsTrigger.displayName = TabsPrimitive.Trigger.displayName
+
+      const TabsContent = React.forwardRef<
+        React.ElementRef<typeof TabsPrimitive.Content>,
+        React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
+      >(({ className, ...props }, ref) => (
+        <TabsPrimitive.Content
+          ref={ref}
+          className={cn(
+            "mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+            className
+          )}
+          {...props}
+        />
+      ))
+      TabsContent.displayName = TabsPrimitive.Content.displayName
+
+      export { Tabs, TabsList, TabsTrigger, TabsContent }
+
+    components/ui/table.tsx: |+
+      import * as React from "react"
+
+      import { cn } from "@/lib/utils"
+
+      const Table = React.forwardRef<
+        HTMLTableElement,
+        React.HTMLAttributes<HTMLTableElement>
+      >(({ className, ...props }, ref) => (
+        <div className="relative w-full overflow-auto">
+          <table
+            ref={ref}
+            className={cn("w-full caption-bottom text-sm", className)}
+            {...props}
+          />
+        </div>
+      ))
+      Table.displayName = "Table"
+
+      const TableHeader = React.forwardRef<
+        HTMLTableSectionElement,
+        React.HTMLAttributes<HTMLTableSectionElement>
+      >(({ className, ...props }, ref) => (
+        <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
+      ))
+      TableHeader.displayName = "TableHeader"
+
+      const TableBody = React.forwardRef<
+        HTMLTableSectionElement,
+        React.HTMLAttributes<HTMLTableSectionElement>
+      >(({ className, ...props }, ref) => (
+        <tbody
+          ref={ref}
+          className={cn("[&_tr:last-child]:border-0", className)}
+          {...props}
+        />
+      ))
+      TableBody.displayName = "TableBody"
+
+      const TableFooter = React.forwardRef<
+        HTMLTableSectionElement,
+        React.HTMLAttributes<HTMLTableSectionElement>
+      >(({ className, ...props }, ref) => (
+        <tfoot
+          ref={ref}
+          className={cn(
+            "border-t bg-muted/50 font-medium [&>tr]:last:border-b-0",
+            className
+          )}
+          {...props}
+        />
+      ))
+      TableFooter.displayName = "TableFooter"
+
+      const TableRow = React.forwardRef<
+        HTMLTableRowElement,
+        React.HTMLAttributes<HTMLTableRowElement>
+      >(({ className, ...props }, ref) => (
+        <tr
+          ref={ref}
+          className={cn(
+            "border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+            className
+          )}
+          {...props}
+        />
+      ))
+      TableRow.displayName = "TableRow"
+
+      const TableHead = React.forwardRef<
+        HTMLTableCellElement,
+        React.ThHTMLAttributes<HTMLTableCellElement>
+      >(({ className, ...props }, ref) => (
+        <th
+          ref={ref}
+          className={cn(
+            "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+            className
+          )}
+          {...props}
+        />
+      ))
+      TableHead.displayName = "TableHead"
+
+      const TableCell = React.forwardRef<
+        HTMLTableCellElement,
+        React.TdHTMLAttributes<HTMLTableCellElement>
+      >(({ className, ...props }, ref) => (
+        <td
+          ref={ref}
+          className={cn(
+            "p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+            className
+          )}
+          {...props}
+        />
+      ))
+      TableCell.displayName = "TableCell"
+
+      const TableCaption = React.forwardRef<
+        HTMLTableCaptionElement,
+        React.HTMLAttributes<HTMLTableCaptionElement>
+      >(({ className, ...props }, ref) => (
+        <caption
+          ref={ref}
+          className={cn("mt-4 text-sm text-muted-foreground", className)}
+          {...props}
+        />
+      ))
+      TableCaption.displayName = "TableCaption"
+
+      export {
+        Table,
+        TableHeader,
+        TableBody,
+        TableFooter,
+        TableHead,
+        TableRow,
+        TableCell,
+        TableCaption,
+      }
+
+    components/ui/textarea.tsx: |+
+      import * as React from "react"
+
+      import { cn } from "@/lib/utils"
+
+      const Textarea = React.forwardRef<
+        HTMLTextAreaElement,
+        React.ComponentProps<"textarea">
+      >(({ className, ...props }, ref) => {
+        return (
+          <textarea
+            className={cn(
+              "flex min-h-[60px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+              className
+            )}
+            ref={ref}
+            {...props}
+          />
+        )
+      })
+      Textarea.displayName = "Textarea"
+
+      export { Textarea }
+
+    components/pages/DefineWordPage.tsx: >
+      import { Search, ArrowLeft } from 'lucide-react';
+
+      import { Input } from '@/components/ui/input';
+
+      import { Button } from '@/components/ui/button';
+
+      import { useState } from 'react';
+
+
+      interface DefineWordPageProps {
+        onBack: () => void;
+        onNavigate: (page: 'define' | 'find' | 'reframe' | 'vault') => void;
+      }
+
+
+      export function DefineWordPage({ onBack, onNavigate }:
+      DefineWordPageProps) {
+        const [searchValue, setSearchValue] = useState('');
+
+        return (
+          <div className="min-h-full flex flex-col px-6 py-8">
+            {/* Back to Home Button */}
+            <div className="max-w-7xl w-full mx-auto">
+              <Button
+                onClick={onBack}
+                variant="ghost"
+                className="text-[#5B3920] hover:bg-[#D4C4A8]/40 mb-4"
+                style={{ fontFamily: 'Playfair Display, serif' }}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Home
+              </Button>
+            </div>
+
+            {/* Main Content - Centered */}
+            <div className="flex-1 flex flex-col items-center justify-center">
+              <div className="max-w-5xl w-full flex flex-col items-center text-center space-y-6">
+                {/* V Logo */}
+                <svg
+                  width="120"
+                  height="140"
+                  viewBox="0 0 400 600"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M50 50 L200 550 L350 50 L280 50 L200 400 L120 50 Z"
+                    fill="#5B3920"
+                  />
+                </svg>
+
+                {/* Headline */}
+                <h1
+                  className="text-5xl sm:text-6xl md:text-7xl font-normal tracking-wide mt-4"
+                  style={{ fontFamily: 'Playfair Display, serif', color: '#5B3920' }}
+                >
+                  DEFINE A WORD
+                </h1>
+
+                {/* Tagline */}
+                <p
+                  className="text-xl sm:text-2xl md:text-3xl font-light leading-relaxed max-w-4xl mt-4"
+                  style={{ fontFamily: 'Playfair Display, serif', color: '#5B3920' }}
+                >
+                  Understand meanings, synonyms, and examples instantly.
+                </p>
+
+                {/* Search Bar */}
+                <div className="relative w-full max-w-4xl mt-8">
+                  <div className="absolute left-6 top-1/2 -translate-y-1/2 z-10">
+                    <Search className="w-6 h-6 text-[#EBD3B0]" />
+                  </div>
+                  <Input
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    placeholder="type a word to explore ..............."
+                    className="w-full h-16 pl-16 pr-6 bg-[#5B3920] text-[#EBD3B0] placeholder:text-[#EBD3B0] placeholder:italic border-none rounded-[50px] text-lg"
+                    style={{ fontFamily: 'Playfair Display, serif' }}
+                  />
+                </div>
+
+                {/* Bottom CTA */}
+                <div className="mt-12">
+                  <p
+                    className="text-base sm:text-lg font-light italic"
+                    style={{ fontFamily: 'Playfair Display, serif', color: '#5B3920' }}
+                  >
+                    Not sure of the exact word? Try Find a Word instead →{' '}
+                    <button
+                      onClick={() => onNavigate('find')}
+                      className="font-semibold underline hover:opacity-80 transition-opacity"
+                      style={{ fontFamily: 'Playfair Display, serif' }}
+                    >
+                      Find a word
+                    </button>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+    components/pages/FindWordPage.tsx: |
+      import { Search, ArrowLeft } from 'lucide-react';
+      import { Input } from '@/components/ui/input';
+      import { Button } from '@/components/ui/button';
+      import { useState } from 'react';
+
+      interface FindWordPageProps {
+        onBack: () => void;
+        onNavigate: (page: 'define' | 'find' | 'reframe' | 'vault') => void;
+      }
+
+      export function FindWordPage({ onBack, onNavigate }: FindWordPageProps) {
+        const [searchValue, setSearchValue] = useState('');
+
+        return (
+          <div className="min-h-full flex flex-col px-6 py-8">
+            {/* Back to Home Button */}
+            <div className="max-w-7xl w-full mx-auto">
+              <Button
+                onClick={onBack}
+                variant="ghost"
+                className="text-[#5B3920] hover:bg-[#D4C4A8]/40 mb-4"
+                style={{ fontFamily: 'Playfair Display, serif' }}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Home
+              </Button>
+            </div>
+
+            {/* Main Content - Centered */}
+            <div className="flex-1 flex flex-col items-center justify-center">
+              <div className="max-w-5xl w-full flex flex-col items-center text-center space-y-6">
+                {/* V Logo */}
+                <svg
+                  width="120"
+                  height="140"
+                  viewBox="0 0 400 600"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M50 50 L200 550 L350 50 L280 50 L200 400 L120 50 Z"
+                    fill="#5B3920"
+                  />
+                </svg>
+
+                {/* Headline */}
+                <h1
+                  className="text-5xl sm:text-6xl md:text-7xl font-normal tracking-wide mt-4"
+                  style={{ fontFamily: 'Playfair Display, serif', color: '#5B3920' }}
+                >
+                  FIND A WORD
+                </h1>
+
+                {/* Tagline */}
+                <p
+                  className="text-xl sm:text-2xl md:text-3xl font-light leading-relaxed max-w-4xl mt-4"
+                  style={{ fontFamily: 'Playfair Display, serif', color: '#5B3920' }}
+                >
+                  Describe what you mean — Verbi will find the perfect word for it.
+                </p>
+
+                {/* Search Bar */}
+                <div className="relative w-full max-w-4xl mt-8">
+                  <div className="absolute left-6 top-1/2 -translate-y-1/2 z-10">
+                    <Search className="w-6 h-6 text-[#EBD3B0]" />
+                  </div>
+                  <Input
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    placeholder="describe a meaning, feeling, or idea....."
+                    className="w-full h-16 pl-16 pr-6 bg-[#5B3920] text-[#EBD3B0] placeholder:text-[#EBD3B0] placeholder:italic border-none rounded-[50px] text-lg"
+                    style={{ fontFamily: 'Playfair Display, serif' }}
+                  />
+                </div>
+
+                {/* Bottom CTA */}
+                <div className="mt-12">
+                  <p
+                    className="text-base sm:text-lg font-light italic"
+                    style={{ fontFamily: 'Playfair Display, serif', color: '#5B3920' }}
+                  >
+                    Didn't find what you were looking for? Try refining your description →{' '}
+                    <button
+                      onClick={() => onNavigate('reframe')}
+                      className="font-semibold underline hover:opacity-80 transition-opacity"
+                      style={{ fontFamily: 'Playfair Display, serif' }}
+                    >
+                      Reframe your thoughts
+                    </button>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+    components/pages/ReframePage.tsx: |
+      import { Search, ArrowLeft } from 'lucide-react';
+      import { Input } from '@/components/ui/input';
+      import { Button } from '@/components/ui/button';
+      import { useState } from 'react';
+
+      interface ReframePageProps {
+        onBack: () => void;
+      }
+
+      export function ReframePage({ onBack }: ReframePageProps) {
+        const [searchValue, setSearchValue] = useState('');
+
+        return (
+          <div className="min-h-full flex flex-col px-6 py-8">
+            {/* Back to Home Button */}
+            <div className="max-w-7xl w-full mx-auto">
+              <Button
+                onClick={onBack}
+                variant="ghost"
+                className="text-[#5B3920] hover:bg-[#D4C4A8]/40 mb-4"
+                style={{ fontFamily: 'Playfair Display, serif' }}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Home
+              </Button>
+            </div>
+
+            {/* Main Content - Centered */}
+            <div className="flex-1 flex flex-col items-center justify-center">
+              <div className="max-w-5xl w-full flex flex-col items-center text-center space-y-6">
+                {/* V Logo */}
+                <svg
+                  width="120"
+                  height="140"
+                  viewBox="0 0 400 600"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M50 50 L200 550 L350 50 L280 50 L200 400 L120 50 Z"
+                    fill="#5B3920"
+                  />
+                </svg>
+
+                {/* Headline */}
+                <h1
+                  className="text-4xl sm:text-5xl md:text-6xl font-normal tracking-wide mt-4"
+                  style={{ fontFamily: 'Playfair Display, serif', color: '#5B3920' }}
+                >
+                  REFRAME YOUR THOUGHTS
+                </h1>
+
+                {/* Tagline */}
+                <p
+                  className="text-lg sm:text-xl md:text-2xl font-light leading-relaxed max-w-4xl mt-4"
+                  style={{ fontFamily: 'Playfair Display, serif', color: '#5B3920' }}
+                >
+                  Turn your ideas into beautifully written sentences — without losing your original meaning.
+                </p>
+
+                {/* Search Bar */}
+                <div className="relative w-full max-w-4xl mt-8">
+                  <div className="absolute left-6 top-1/2 -translate-y-1/2 z-10">
+                    <Search className="w-6 h-6 text-[#EBD3B0]" />
+                  </div>
+                  <Input
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    placeholder="Type or paste your sentence here......"
+                    className="w-full h-16 pl-16 pr-6 bg-[#5B3920] text-[#EBD3B0] placeholder:text-[#EBD3B0] placeholder:italic border-none rounded-[50px] text-lg"
+                    style={{ fontFamily: 'Playfair Display, serif' }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+    components/pages/VaultPage.tsx: |
+      import { Card } from '@/components/ui/card';
+      import { Button } from '@/components/ui/button';
+      import { ArrowLeft } from 'lucide-react';
+
+      interface VaultPageProps {
+        onBack: () => void;
+      }
+
+      export function VaultPage({ onBack }: VaultPageProps) {
+        return (
+          <div className="min-h-full p-8">
+            <div className="max-w-6xl mx-auto">
+              <Button
+                onClick={onBack}
+                variant="ghost"
+                className="mb-6 text-[#5E3A1D] hover:bg-[#E5D4B5]"
+                style={{ fontFamily: 'Playfair Display, serif' }}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Home
+              </Button>
+              
+              <h2
+                className="text-4xl font-bold mb-8"
+                style={{ fontFamily: 'Playfair Display, serif', color: '#5E3A1D' }}
+              >
+                My Vault
+              </h2>
+              
+              <Card className="p-8 rounded-[25px] border-[#D4C4A8] shadow-md bg-white/80">
+                <p className="text-[#5E3A1D]" style={{ fontFamily: 'Cormorant Garamond, serif' }}>
+                  My Vault page - Coming soon
+                </p>
+              </Card>
+            </div>
+          </div>
+        );
+      }
+    app/globals.css: >
+      @import
+      url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;500&display=swap');
+
+
+      @tailwind base;
+
+      @tailwind components;
+
+      @tailwind utilities;
+
+
+      @layer base {
+        :root {
+          --background: 37 40% 82%;
+          --foreground: 25 51% 23%;
+          --card: 37 40% 82%;
+          --card-foreground: 25 51% 23%;
+          --popover: 37 40% 82%;
+          --popover-foreground: 25 51% 23%;
+          --primary: 25 51% 23%;
+          --primary-foreground: 37 40% 82%;
+          --secondary: 25 41% 30%;
+          --secondary-foreground: 37 40% 82%;
+          --muted: 37 30% 75%;
+          --muted-foreground: 25 41% 30%;
+          --accent: 25 51% 23%;
+          --accent-foreground: 37 40% 82%;
+          --destructive: 0 84.2% 60.2%;
+          --destructive-foreground: 0 0% 98%;
+          --border: 25 30% 70%;
+          --input: 25 30% 70%;
+          --ring: 25 51% 23%;
+          --radius: 3.125rem;
+        }
+      }
+
+
+      @layer base {
+        * {
+          @apply border-border;
+        }
+        body {
+          @apply bg-background text-foreground;
+          font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+          font-family: 'Playfair Display', Georgia, serif;
+          font-weight: 600;
+        }
+      }
+
+
+      @layer utilities {
+        .fade-in {
+          animation: fadeIn 0.4s ease-in;
+        }
+        
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      }
+    components/pages/HomePage.tsx: |
+      import { Button } from '@/components/ui/button';
+
+      interface HomePageProps {
+        onNavigate: (page: 'define' | 'find' | 'reframe' | 'vault') => void;
+      }
+
+      export function HomePage({ onNavigate }: HomePageProps) {
+        return (
+          <div className="h-full flex items-center justify-center px-8 py-12">
+            <div className="max-w-7xl w-full flex items-center justify-center gap-16">
+              {/* Large V Logo */}
+              <div className="flex-shrink-0">
+                <svg
+                  width="400"
+                  height="600"
+                  viewBox="0 0 400 600"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="drop-shadow-lg"
+                >
+                  <path
+                    d="M50 50 L200 550 L350 50 L280 50 L200 400 L120 50 Z"
+                    fill="#5E3A1D"
+                  />
+                </svg>
+              </div>
+
+              {/* Right Side Content */}
+              <div className="flex flex-col items-start gap-8">
+                {/* Title and Tagline */}
+                <div className="mb-4">
+                  <h1
+                    className="text-7xl font-bold tracking-wide mb-3"
+                    style={{ fontFamily: 'Playfair Display, serif', color: '#5E3A1D' }}
+                  >
+                    VERBI
+                  </h1>
+                  <p
+                    className="text-3xl font-light tracking-wide"
+                    style={{ fontFamily: 'Playfair Display, serif', color: '#5E3A1D' }}
+                  >
+                    Find the right word everytime
+                  </p>
+                </div>
+
+                {/* Button Grid */}
+                <div className="grid grid-cols-2 gap-4 w-full max-w-xl">
+                  <Button
+                    onClick={() => onNavigate('find')}
+                    className="h-14 text-lg font-medium bg-[#5E3A1D] text-[#F3E0C2] hover:bg-[#4B2E15] rounded-[25px] shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
+                    style={{ fontFamily: 'Playfair Display, serif' }}
+                  >
+                    Find a word
+                  </Button>
+                  <Button
+                    onClick={() => onNavigate('define')}
+                    className="h-14 text-lg font-medium bg-[#5E3A1D] text-[#F3E0C2] hover:bg-[#4B2E15] rounded-[25px] shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
+                    style={{ fontFamily: 'Playfair Display, serif' }}
+                  >
+                    Define a word
+                  </Button>
+                  <Button
+                    onClick={() => onNavigate('reframe')}
+                    className="h-14 text-lg font-medium bg-[#5E3A1D] text-[#F3E0C2] hover:bg-[#4B2E15] rounded-[25px] shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
+                    style={{ fontFamily: 'Playfair Display, serif' }}
+                  >
+                    Reframe
+                  </Button>
+                  <Button
+                    onClick={() => onNavigate('vault')}
+                    className="h-14 text-lg font-medium bg-[#5E3A1D] text-[#F3E0C2] hover:bg-[#4B2E15] rounded-[25px] shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
+                    style={{ fontFamily: 'Playfair Display, serif' }}
+                  >
+                    Word Vault
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+  data: '{{ module.data }}'
+  __UIBAKERY__RESPONSIVE__SHOW__CONDITION__CODE__:
+    - xl
+    - xs
+  fileSystemCompiled: >
+    <script src="assets/tailwind.js"></script>
+
+    <link rel="stylesheet" href="assets/tailwind.css" />
+
+    <style></style>
+
+
+    <div class="root"></div>
+
+
+    <script>
+     window['UIB_MODULES_TO_LOAD_UIB_PROD_BUILD_COMPONENT_ID_MOCK.id']=["react", "react-dom", "react-dom/client", "react/jsx-dev-runtime", "react-hook-form", "lucide-react", "@radix-ui/react-slot", "class-variance-authority", "clsx", "tailwind-merge"];
+    </script>
+
+    <script id="UIB_script_UIB_PROD_BUILD_COMPONENT_ID_MOCK.id.js">(()=>{var
+    J=Object.create;var y=Object.defineProperty;var
+    Q=Object.getOwnPropertyDescriptor;var X=Object.getOwnPropertyNames;var
+    $=Object.getPrototypeOf,ee=Object.prototype.hasOwnProperty;var l=(e=>typeof
+    require<"u"?require:typeof Proxy<"u"?new Proxy(e,{get:(t,a)=>(typeof
+    require<"u"?require:t)[a]}):e)(function(e){if(typeof require<"u")return
+    require.apply(this,arguments);throw Error('Dynamic require of "'+e+'" is not
+    supported')});var d=(e,t)=>()=>(e&&(t=e(e=0)),t);var te=(e,t)=>{for(var a in
+    t)y(e,a,{get:t[a],enumerable:!0})},L=(e,t,a,o)=>{if(t&&typeof
+    t=="object"||typeof t=="function")for(let m of
+    X(t))!ee.call(e,m)&&m!==a&&y(e,m,{get:()=>t[m],enumerable:!(o=Q(t,m))||o.enumerable});return
+    e};var
+    D=(e,t,a)=>(a=e!=null?J($(e)):{},L(t||!e||!e.__esModule?y(a,"default",{value:e,enumerable:!0}):a,e)),ae=e=>L(y({},"__esModule",{value:!0}),e);var
+    i,f,r=d(()=>{i=window.UB_CUSTOM_REACT_APP_BUS["UIB_PROD_BUILD_COMPONENT_ID_MOCK.id"].bus,f=i.customConsole});function
+    c(...e){return(0,F.twMerge)((0,M.clsx)(e))}var
+    M,F,g=d(()=>{r();M=l("clsx"),F=l("tailwind-merge")});var
+    h,R,T,re,s,u=d(()=>{r();h=D(l("react")),R=l("@radix-ui/react-slot"),T=l("class-variance-authority");g();re=(0,T.cva)("inline-flex
+    items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm
+    font-medium transition-colors focus-visible:outline-none
+    focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none
+    disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4
+    [&_svg]:shrink-0",{variants:{variant:{default:"bg-primary
+    text-primary-foreground shadow
+    hover:bg-primary/90",destructive:"bg-destructive text-destructive-foreground
+    shadow-sm hover:bg-destructive/90",outline:"border border-input
+    bg-background shadow-sm hover:bg-accent
+    hover:text-accent-foreground",secondary:"bg-secondary
+    text-secondary-foreground shadow-sm
+    hover:bg-secondary/80",ghost:"hover:bg-accent
+    hover:text-accent-foreground",link:"text-primary underline-offset-4
+    hover:underline"},size:{default:"h-9 px-4 py-2",sm:"h-8 rounded-md px-3
+    text-xs",lg:"h-10 rounded-md px-8",icon:"h-9
+    w-9"}},defaultVariants:{variant:"default",size:"default"}}),s=h.forwardRef(({className:e,variant:t,size:a,asChild:o=!1,...m},C)=>h.createElement(o?R.Slot:"button",{className:c(re({variant:t,size:a,className:e})),ref:C,...m}));s.displayName="Button"});function
+    P({onNavigate:e}){return React.createElement("div",{className:"h-full flex
+    items-center justify-center px-8
+    py-12"},React.createElement("div",{className:"max-w-7xl w-full flex
+    items-center justify-center
+    gap-16"},React.createElement("div",{className:"flex-shrink-0"},React.createElement("svg",{width:"400",height:"600",viewBox:"0
+    0 400
+    600",fill:"none",xmlns:"http://www.w3.org/2000/svg",className:"drop-shadow-lg"},React.createElement("path",{d:"M50
+    50 L200 550 L350 50 L280 50 L200 400 L120 50
+    Z",fill:"#5E3A1D"}))),React.createElement("div",{className:"flex flex-col
+    items-start
+    gap-8"},React.createElement("div",{className:"mb-4"},React.createElement("h1",{className:"text-7xl
+    font-bold tracking-wide mb-3",style:{fontFamily:"Playfair Display,
+    serif",color:"#5E3A1D"}},"VERBI"),React.createElement("p",{className:"text-3xl
+    font-light tracking-wide",style:{fontFamily:"Playfair Display,
+    serif",color:"#5E3A1D"}},"Find the right word
+    everytime")),React.createElement("div",{className:"grid grid-cols-2 gap-4
+    w-full
+    max-w-xl"},React.createElement(s,{onClick:()=>e("find"),className:"h-14
+    text-lg font-medium bg-[#5E3A1D] text-[#F3E0C2] hover:bg-[#4B2E15]
+    rounded-[25px] shadow-md hover:shadow-lg transition-all duration-200
+    hover:-translate-y-0.5",style:{fontFamily:"Playfair Display, serif"}},"Find
+    a word"),React.createElement(s,{onClick:()=>e("define"),className:"h-14
+    text-lg font-medium bg-[#5E3A1D] text-[#F3E0C2] hover:bg-[#4B2E15]
+    rounded-[25px] shadow-md hover:shadow-lg transition-all duration-200
+    hover:-translate-y-0.5",style:{fontFamily:"Playfair Display,
+    serif"}},"Define a
+    word"),React.createElement(s,{onClick:()=>e("reframe"),className:"h-14
+    text-lg font-medium bg-[#5E3A1D] text-[#F3E0C2] hover:bg-[#4B2E15]
+    rounded-[25px] shadow-md hover:shadow-lg transition-all duration-200
+    hover:-translate-y-0.5",style:{fontFamily:"Playfair Display,
+    serif"}},"Reframe"),React.createElement(s,{onClick:()=>e("vault"),className:"h-14
+    text-lg font-medium bg-[#5E3A1D] text-[#F3E0C2] hover:bg-[#4B2E15]
+    rounded-[25px] shadow-md hover:shadow-lg transition-all duration-200
+    hover:-translate-y-0.5",style:{fontFamily:"Playfair Display, serif"}},"Word
+    Vault")))))}var k=d(()=>{r();u()});var
+    v,p,w=d(()=>{r();v=D(l("react"));g();p=v.forwardRef(({className:e,type:t,...a},o)=>v.createElement("input",{type:t,className:c("flex
+    h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-base
+    shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm
+    file:font-medium file:text-foreground placeholder:text-muted-foreground
+    focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring
+    disabled:cursor-not-allowed disabled:opacity-50
+    md:text-sm",e),ref:o,...a}));p.displayName="Input"});function
+    A({onBack:e,onNavigate:t}){let[a,o]=(0,H.useState)("");return
+    React.createElement("div",{className:"min-h-full flex flex-col px-6
+    py-8"},React.createElement("div",{className:"max-w-7xl w-full
+    mx-auto"},React.createElement(s,{onClick:e,variant:"ghost",className:"text-[#5B3920]
+    hover:bg-[#D4C4A8]/40 mb-4",style:{fontFamily:"Playfair Display,
+    serif"}},React.createElement(B.ArrowLeft,{className:"w-4 h-4 mr-2"}),"Back
+    to Home")),React.createElement("div",{className:"flex-1 flex flex-col
+    items-center
+    justify-center"},React.createElement("div",{className:"max-w-5xl w-full flex
+    flex-col items-center text-center
+    space-y-6"},React.createElement("svg",{width:"120",height:"140",viewBox:"0 0
+    400
+    600",fill:"none",xmlns:"http://www.w3.org/2000/svg"},React.createElement("path",{d:"M50
+    50 L200 550 L350 50 L280 50 L200 400 L120 50
+    Z",fill:"#5B3920"})),React.createElement("h1",{className:"text-5xl
+    sm:text-6xl md:text-7xl font-normal tracking-wide
+    mt-4",style:{fontFamily:"Playfair Display, serif",color:"#5B3920"}},"DEFINE
+    A WORD"),React.createElement("p",{className:"text-xl sm:text-2xl md:text-3xl
+    font-light leading-relaxed max-w-4xl mt-4",style:{fontFamily:"Playfair
+    Display, serif",color:"#5B3920"}},"Understand meanings, synonyms, and
+    examples instantly."),React.createElement("div",{className:"relative w-full
+    max-w-4xl mt-8"},React.createElement("div",{className:"absolute left-6
+    top-1/2 -translate-y-1/2 z-10"},React.createElement(B.Search,{className:"w-6
+    h-6
+    text-[#EBD3B0]"})),React.createElement(p,{value:a,onChange:m=>o(m.target.value),placeholder:"type
+    a word to explore ...............",className:"w-full h-16 pl-16 pr-6
+    bg-[#5B3920] text-[#EBD3B0] placeholder:text-[#EBD3B0] placeholder:italic
+    border-none rounded-[50px] text-lg",style:{fontFamily:"Playfair Display,
+    serif"}})),React.createElement("div",{className:"mt-12"},React.createElement("p",{className:"text-base
+    sm:text-lg font-light italic",style:{fontFamily:"Playfair Display,
+    serif",color:"#5B3920"}},"Not sure of the exact word? Try Find a Word
+    instead \u2192","
+    ",React.createElement("button",{onClick:()=>t("find"),className:"font-semibold
+    underline hover:opacity-80 transition-opacity",style:{fontFamily:"Playfair
+    Display, serif"}},"Find a word"))))))}var
+    B,H,_=d(()=>{r();B=l("lucide-react");w();u();H=l("react")});function
+    O({onBack:e,onNavigate:t}){let[a,o]=(0,I.useState)("");return
+    React.createElement("div",{className:"min-h-full flex flex-col px-6
+    py-8"},React.createElement("div",{className:"max-w-7xl w-full
+    mx-auto"},React.createElement(s,{onClick:e,variant:"ghost",className:"text-[#5B3920]
+    hover:bg-[#D4C4A8]/40 mb-4",style:{fontFamily:"Playfair Display,
+    serif"}},React.createElement(N.ArrowLeft,{className:"w-4 h-4 mr-2"}),"Back
+    to Home")),React.createElement("div",{className:"flex-1 flex flex-col
+    items-center
+    justify-center"},React.createElement("div",{className:"max-w-5xl w-full flex
+    flex-col items-center text-center
+    space-y-6"},React.createElement("svg",{width:"120",height:"140",viewBox:"0 0
+    400
+    600",fill:"none",xmlns:"http://www.w3.org/2000/svg"},React.createElement("path",{d:"M50
+    50 L200 550 L350 50 L280 50 L200 400 L120 50
+    Z",fill:"#5B3920"})),React.createElement("h1",{className:"text-5xl
+    sm:text-6xl md:text-7xl font-normal tracking-wide
+    mt-4",style:{fontFamily:"Playfair Display, serif",color:"#5B3920"}},"FIND A
+    WORD"),React.createElement("p",{className:"text-xl sm:text-2xl md:text-3xl
+    font-light leading-relaxed max-w-4xl mt-4",style:{fontFamily:"Playfair
+    Display, serif",color:"#5B3920"}},"Describe what you mean \u2014 Verbi will
+    find the perfect word for
+    it."),React.createElement("div",{className:"relative w-full max-w-4xl
+    mt-8"},React.createElement("div",{className:"absolute left-6 top-1/2
+    -translate-y-1/2 z-10"},React.createElement(N.Search,{className:"w-6 h-6
+    text-[#EBD3B0]"})),React.createElement(p,{value:a,onChange:m=>o(m.target.value),placeholder:"describe
+    a meaning, feeling, or idea.....",className:"w-full h-16 pl-16 pr-6
+    bg-[#5B3920] text-[#EBD3B0] placeholder:text-[#EBD3B0] placeholder:italic
+    border-none rounded-[50px] text-lg",style:{fontFamily:"Playfair Display,
+    serif"}})),React.createElement("div",{className:"mt-12"},React.createElement("p",{className:"text-base
+    sm:text-lg font-light italic",style:{fontFamily:"Playfair Display,
+    serif",color:"#5B3920"}},"Didn't find what you were looking for? Try
+    refining your description \u2192","
+    ",React.createElement("button",{onClick:()=>t("reframe"),className:"font-semibold
+    underline hover:opacity-80 transition-opacity",style:{fontFamily:"Playfair
+    Display, serif"}},"Reframe your thoughts"))))))}var
+    N,I,V=d(()=>{r();N=l("lucide-react");w();u();I=l("react")});function
+    S({onBack:e}){let[t,a]=(0,U.useState)("");return
+    React.createElement("div",{className:"min-h-full flex flex-col px-6
+    py-8"},React.createElement("div",{className:"max-w-7xl w-full
+    mx-auto"},React.createElement(s,{onClick:e,variant:"ghost",className:"text-[#5B3920]
+    hover:bg-[#D4C4A8]/40 mb-4",style:{fontFamily:"Playfair Display,
+    serif"}},React.createElement(b.ArrowLeft,{className:"w-4 h-4 mr-2"}),"Back
+    to Home")),React.createElement("div",{className:"flex-1 flex flex-col
+    items-center
+    justify-center"},React.createElement("div",{className:"max-w-5xl w-full flex
+    flex-col items-center text-center
+    space-y-6"},React.createElement("svg",{width:"120",height:"140",viewBox:"0 0
+    400
+    600",fill:"none",xmlns:"http://www.w3.org/2000/svg"},React.createElement("path",{d:"M50
+    50 L200 550 L350 50 L280 50 L200 400 L120 50
+    Z",fill:"#5B3920"})),React.createElement("h1",{className:"text-4xl
+    sm:text-5xl md:text-6xl font-normal tracking-wide
+    mt-4",style:{fontFamily:"Playfair Display, serif",color:"#5B3920"}},"REFRAME
+    YOUR THOUGHTS"),React.createElement("p",{className:"text-lg sm:text-xl
+    md:text-2xl font-light leading-relaxed max-w-4xl
+    mt-4",style:{fontFamily:"Playfair Display, serif",color:"#5B3920"}},"Turn
+    your ideas into beautifully written sentences \u2014 without losing your
+    original meaning."),React.createElement("div",{className:"relative w-full
+    max-w-4xl mt-8"},React.createElement("div",{className:"absolute left-6
+    top-1/2 -translate-y-1/2 z-10"},React.createElement(b.Search,{className:"w-6
+    h-6
+    text-[#EBD3B0]"})),React.createElement(p,{value:t,onChange:o=>a(o.target.value),placeholder:"Type
+    or paste your sentence here......",className:"w-full h-16 pl-16 pr-6
+    bg-[#5B3920] text-[#EBD3B0] placeholder:text-[#EBD3B0] placeholder:italic
+    border-none rounded-[50px] text-lg",style:{fontFamily:"Playfair Display,
+    serif"}})))))}var
+    b,U,W=d(()=>{r();b=l("lucide-react");w();u();U=l("react")});var
+    n,E,oe,le,ie,se,ne,Z=d(()=>{r();n=D(l("react"));g();E=n.forwardRef(({className:e,...t},a)=>n.createElement("div",{ref:a,className:c("rounded-lg
+    border bg-card text-card-foreground
+    shadow-sm",e),...t}));E.displayName="Card";oe=n.forwardRef(({className:e,...t},a)=>n.createElement("div",{ref:a,className:c("flex
+    flex-col space-y-1.5
+    p-6",e),...t}));oe.displayName="CardHeader";le=n.forwardRef(({className:e,...t},a)=>n.createElement("h3",{ref:a,className:c("text-2xl
+    font-semibold leading-none
+    tracking-tight",e),...t}));le.displayName="CardTitle";ie=n.forwardRef(({className:e,...t},a)=>n.createElement("p",{ref:a,className:c("text-sm
+    text-muted-foreground",e),...t}));ie.displayName="CardDescription";se=n.forwardRef(({className:e,...t},a)=>n.createElement("div",{ref:a,className:c("p-6
+    pt-0",e),...t}));se.displayName="CardContent";ne=n.forwardRef(({className:e,...t},a)=>n.createElement("div",{ref:a,className:c("flex
+    items-center p-6 pt-0",e),...t}));ne.displayName="CardFooter"});function
+    z({onBack:e}){return React.createElement("div",{className:"min-h-full
+    p-8"},React.createElement("div",{className:"max-w-6xl
+    mx-auto"},React.createElement(s,{onClick:e,variant:"ghost",className:"mb-6
+    text-[#5E3A1D] hover:bg-[#E5D4B5]",style:{fontFamily:"Playfair Display,
+    serif"}},React.createElement(j.ArrowLeft,{className:"w-4 h-4 mr-2"}),"Back
+    to Home"),React.createElement("h2",{className:"text-4xl font-bold
+    mb-8",style:{fontFamily:"Playfair Display, serif",color:"#5E3A1D"}},"My
+    Vault"),React.createElement(E,{className:"p-8 rounded-[25px]
+    border-[#D4C4A8] shadow-md
+    bg-white/80"},React.createElement("p",{className:"text-[#5E3A1D]",style:{fontFamily:"Cormorant
+    Garamond, serif"}},"My Vault page - Coming soon"))))}var
+    j,q=d(()=>{r();Z();u();j=l("lucide-react")});var
+    K={};te(K,{default:()=>de});function
+    me(){let[e,t]=(0,G.useState)("home");return
+    React.createElement("div",{className:"min-h-screen bg-[#EBD3B0] flex
+    flex-col"},React.createElement("div",{className:"flex-1
+    fade-in"},(()=>{switch(e){case"home":return
+    React.createElement(P,{onNavigate:t});case"define":return
+    React.createElement(A,{onNavigate:t,onBack:()=>t("home")});case"find":return
+    React.createElement(O,{onNavigate:t,onBack:()=>t("home")});case"reframe":return
+    React.createElement(S,{onBack:()=>t("home")});case"vault":return
+    React.createElement(z,{onBack:()=>t("home")});default:return
+    React.createElement(P,{onNavigate:t})}})()),React.createElement("footer",{className:"py-4
+    text-center"},React.createElement("p",{className:"text-sm
+    text-[#5B3920]",style:{fontFamily:"Playfair Display, serif"}},"Made with
+    ",React.createElement("span",{className:"text-[#5B3920]"},"\u{1F49C}")," by
+    Verbi")))}var
+    G,de,Y=d(()=>{r();G=l("react");k();_();V();W();q();de=me});r();function
+    fe(){let e=l("react"),t=(Y(),ae(K)).default;window.React=e;let
+    a=l("react-dom/client").createRoot,o=a(i.container.querySelector(".root"));class
+    m extends e.Component{state={hasError:!1};static
+    getDerivedStateFromError(x){return{hasError:!0}}componentDidCatch(x,ce){i.handleError(x,x?.name==="ModuleLoadingError")}render(){return
+    this.state.hasError?e.createElement("div",{class:"module-error"},"Something
+    went
+    wrong."):this.props.children}}o.render(e.createElement(m,null,e.createElement(t,null)))}Zone.current.fork({name:"angular-bootstrap",onHandleError(e,t,a,o){return
+    i.handleError(o,o?.name==="ModuleLoadingError"),i.onModulesLoaded(),!1}}).runGuarded(()=>{loadModulesSequentially(window["UIB_MODULES_TO_LOAD_UIB_PROD_BUILD_COMPONENT_ID_MOCK.id"]).then(()=>{delete
+    window["UIB_MODULES_TO_LOAD_UIB_PROD_BUILD_COMPONENT_ID_MOCK.id"],i.onModulesLoaded(),fe()})});})();
+
+
+    //# sourceURL=UIB_script_UIB_PROD_BUILD_COMPONENT_ID_MOCK.id.js</script>
+actions: {}
+slots:
+  - id: moduleContainerSlot
+    name: content
+    children: []
